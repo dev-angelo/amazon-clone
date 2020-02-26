@@ -1,7 +1,7 @@
-import SlideService from './Slide/SlideService.js';
-import SearchController from './Search/SearchController.js'
-import SearchView from './Search/SearchView.js'
-import SearchModel from './Search/SearchModel.js'
+import SlideService from './SlideService.js';
+import SearchController from './SearchController.js'
+import SearchView from './SearchView.js'
+import SearchModel from './SearchModel.js'
 
 window.addEventListener('DOMContentLoaded', () => {
     const url = 'http://220.78.96.186:8080';
