@@ -1,5 +1,5 @@
 import SearchInputView from "./SearchInputView.js";
-import SearchAutocompletionView from "./SearchAutocompletionView.js";
+import SearchAutocompletionView from "./SearchAutoCompletionView.js";
 import SearchBackgroundView from "./SearchBackgroundView.js";
 import SearchRecentlyView from "./SearchRecentlyView.js";
 import SearchEnum from "./SearchEnum.js";
