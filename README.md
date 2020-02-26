@@ -1,1 +1,2 @@
-# amazon-clone
+# javascript-amazon
+레벨3
