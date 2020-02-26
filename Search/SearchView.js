@@ -27,7 +27,7 @@ class SearchView {
         const result = '<div class="search">' + 
                         this.searchBackgroundView.render() + 
                         this.searchInputView.render() + 
-                        this.searchAutocompletionView.render() + 
+                        this.searchAutoCompletionView.render() + 
                         '</div>';
 
         document.querySelector(".wrap").insertAdjacentHTML('afterbegin', result);
