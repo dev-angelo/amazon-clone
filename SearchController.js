@@ -53,7 +53,7 @@ class SearchController {
     _fetchExtractedWords(inputFieldText) {
         const data = {userInputText: inputFieldText};
 
-        fetch('https://220.78.96.186:8080', {
+        fetch('http://220.78.96.186:8080', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
