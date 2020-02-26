@@ -1,5 +1,5 @@
 import SearchInputView from "./SearchInputView.js";
-import SearchAutoCompletionView from "./SearchAutoCompletionView.js";
+import SearchAutocompletionView from "./SearchAutocompletionView.js";
 import SearchBackgroundView from "./SearchBackgroundView.js";
 import SearchRecentlyView from "./SearchRecentlyView.js";
 import SearchEnum from "./SearchEnum.js";
@@ -9,12 +9,12 @@ class SearchView {
         this.view = [];
 
         this.searchInputView = new SearchInputView();
-        this.searchAutoCompletionView = new SearchAutoCompletionView();
+        this.searchAutocompletionView = new SearchAutocompletionView();
         this.searchBackgroundView = new SearchBackgroundView();
         this.searchRecentlyView = new SearchRecentlyView();
 
         this._registerView(this.searchInputView);
-        this._registerView(this.searchAutoCompletionView);
+        this._registerView(this.searchAutocompletionView);
         this._registerView(this.searchBackgroundView);
         this._registerView(this.searchRecentlyView);
     }
@@ -27,7 +27,7 @@ class SearchView {
         const result = '<div class="search">' + 
                         this.searchBackgroundView.render() + 
                         this.searchInputView.render() + 
-                        this.searchAutoCompletionView.render() + 
+                        this.searchAutocompletionView.render() + 
                         '</div>';
 
         document.querySelector(".wrap").insertAdjacentHTML('afterbegin', result);
@@ -51,9 +51,15 @@ class SearchView {
         });
     }
 
-    onNotifyListElementClicked(target) {
+    onNotifyListElementSelected(text, index = null) {
         this.view.forEach(element => {
-            element.onNotifyListElementClicked(target);
+            element.onNotifyListElementSelected(text);
+        });
+    }
+
+    onNotifyCurrentIndexChanged(currentIndex) {
+        this.view.forEach(element => {
+            element.onNotifyCurrentIndexChanged(currentIndex);
         });
     }
 }

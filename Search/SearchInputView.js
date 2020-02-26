@@ -8,6 +8,7 @@ class SearchInputView {
         <div class="searchBox">
             <input type="text" class="searchInputField" placeholder="What are you looking for?">
             <button type="submit" class="searchButton">
+                <i class="fa fa-search"></i>
             </button>
         </div>
         `
@@ -23,8 +24,11 @@ class SearchInputView {
     onNotifyBackgroundClicked() {
     }
 
-    onNotifyListElementClicked(target) {
-        this.searchInputView.value = target.innerHTML;
+    onNotifyListElementSelected(text) {
+        this.searchInputView.value = text;
+    }
+
+    onNotifyCurrentIndexChanged(currentIndex) {
     }
 }
 
