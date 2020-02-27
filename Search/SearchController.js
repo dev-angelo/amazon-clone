@@ -1,78 +1,32 @@
-import SearchEnum from "./SearchEnum.js";
+import SEARCH_ENUM from "./SearchEnum.js";
+const SEARCH_AJAX_INFORMATION = SEARCH_ENUM.SEARCH_AJAX_INFORMATION;
+const SEARCH_STATUS = SEARCH_ENUM.SEARCH_STATUS;
 
 class SearchController {
     constructor(model, view) {
-        this.model = model;
-        this.view = view;
+        this._currentStatus = SEARCH_STATUS.NORMAL;
 
-        this.view.render();
-        this.view.onNotifyRenderFinished();
-        
-        this._appendEventHandler();
-        this._appendBind();
+        this._model = model;
+        this._view = view;
+
+        this._view.appendHandler({
+            keyInputHandler: this._handleKeyInput.bind(this),
+            dimmedBackgroundClickHandler: this._handleDimmedBackgroundClick.bind(this),
+            suggestionClickHandler: this._handleSuggestionClick.bind(this),
+            searchButtonClickHandler: this._handleSearchButtonClick.bind(this),
+            arrowUpPressHandler: this._handleArrowUpPress.bind(this),
+            arrowDownPressHandler: this._handleArrowDownPress.bind(this),
+            suggestionEnterHandler: this._handleSuggestionEnter.bind(this),
+        });
+
+        this._view.render();
+        this._view.onNotifyRenderFinished();
     }
-
-    _appendEventHandler() {
-        const search = document.querySelector('.search');
-
-        search.addEventListener('input', event => this._handleInputEvent(event));
-        search.addEventListener('click', event => this._handleClickEvent(event));
-        search.addEventListener('keydown', event => this._handleKeyEvent(event));
-    }
-
-    _appendBind() {
-        this.model.bindSuggestionChanged(this.onSuggestionChanged.bind(this));
-        this.model.bindCurrentIndexChanged(this.onCurrentIndexChanged.bind(this));
-    }
-
-    _handleInputEvent(event) {
-        if (event.target === document.querySelector('.searchInputField')) {
-            if (0 === event.target.value.length) {
-                this.model.setCurrentText(event.target.value)
-                this.model.setSuggestion([]);
-            }
-            else {
-                this.model.setCurrentText(event.target.value)
-                this._fetchExtractedWords(event.target.value);
-            }
-        }
-    }
-
-    _handleClickEvent(event) {
-        if (event.target === document.querySelector('.searchBackground')) {
-            this.view.onNotifyBackgroundClicked();
-        }
-        else if (event.target === document.querySelector('.searchButton')) {
-            this.view.onNotifySearchButtonClicked();
-        }
-        else if (event.target === document.querySelector('.searchInputField')) {
-        }
-        else if (event.target === document.querySelector('.search')) {
-        }
-        else {
-            this.view.onNotifyListElementSelected(event.target.innerHTML);
-        }
-    }
-
-    _handleKeyEvent(event) {
-        if (event.key === 'ArrowUp') {
-            this.model.decreaseCurrentIndex();
-            event.preventDefault();
-        }
-        else if (event.key === 'ArrowDown') {
-            this.model.increaseCurrentIndex();
-            event.preventDefault();
-        }
-        else if (event.key === 'Enter') {
-            const focusedElement = (document.querySelector(".searchSuggestion").querySelectorAll("li"))[this.model.getCurrentIndex()];
-            focusedElement.click();
-        }
-    }
-    
+   
     _fetchExtractedWords(inputFieldText) {
         const data = {userInputText: inputFieldText};
 
-        fetch(SearchEnum.URL, {
+        fetch(SEARCH_AJAX_INFORMATION.URL, {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -90,18 +44,58 @@ class SearchController {
     }
 
     _onExtractedWordsReceived(suggestionData) {
-        if (this.model.getCurrentText() !== suggestionData.userInputText) 
+        if (this._model.getCurrentText() !== suggestionData.userInputText) 
             return;
 
-        this.model.setSuggestion(suggestionData.suggestionList);
-    }
-
-    onSuggestionChanged(extractedWords) {
-        this.view.onNotifySuggestionChanged(extractedWords);
+        if (suggestionData.suggestionList.length) {
+            this._model.setSuggestion(suggestionData.suggestionList);
+            this._view.onNotifyCurrentStatusChanged(SEARCH_STATUS.AUTOCOMPLETION);
+        }
+        else {
+            this._model.setSuggestion({});
+            this._view.onNotifyCurrentStatusChanged(SEARCH_STATUS.NORMAL);
+        }
     }
 
     onCurrentIndexChanged(currentIndex) {
-        this.view.onNotifyCurrentIndexChanged(currentIndex);
+        this._view.onNotifyCurrentIndexChanged(currentIndex);
+    }
+
+    _handleDimmedBackgroundClick(event) {
+        this._view.onNotifyCurrentStatusChanged(SEARCH_STATUS.NORMAL);
+    }
+
+    _handleSuggestionClick(event) {
+        this._model.setCurrentText(event.target.innerHTML);
+        this._view.onNotifyCurrentStatusChanged(SEARCH_STATUS.NORMAL);
+    }
+
+    _handleSearchButtonClick(event) {
+    }
+
+    _handleArrowUpPress(event) {
+        this._model.decreaseCurrentIndex();
+    }
+
+    _handleArrowDownPress(event) {
+        this._model.increaseCurrentIndex();
+    }
+
+    _handleSuggestionEnter(event) {
+        const focusedElement = (document.querySelector(".searchSuggestion").querySelectorAll("li"))[this._model.getCurrentIndex()];
+        focusedElement.click();
+    }
+
+    _handleKeyInput(event) {
+        if (0 === event.target.value.length) {
+            this._model.setCurrentText(event.target.value)
+            this._model.setSuggestion([]);
+            this._view.onNotifyCurrentStatusChanged(SEARCH_STATUS.NORMAL);
+        }
+        else {
+            this._model.setCurrentText(event.target.value)
+            this._fetchExtractedWords(event.target.value);
+        }
     }
 }
 
